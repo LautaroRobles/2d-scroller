@@ -1,0 +1,29 @@
+// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+
+// Create a RenderTexture with enableRandomWrite flag and set it
+// with cs.SetTexture
+Texture2D<float4> Input;
+RWTexture2D<float4> Output;
+
+
+[numthreads(8,8,1)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+    int kernelSize = 3;
+    float kernel[3][3] = {{1/4 ,1/2,1/4},
+                        { -0.1 , 0.99, 1/2},
+                        {1/4 ,1/2,1/4}};
+
+    // TODO: insert actual code here!
+    float2 position = id.xy;
+    float outputColor = 0;
+
+    for(int x = 0; x < kernelSize; x++) {
+        for(int y = 0; y < kernelSize; y++) {
+            outputColor += Input[position + float2(x - 1, y - 1)].x * kernel[x][y];
+        }
+    }
+
+    Output[position] = float4(outputColor, outputColor, outputColor, 1);
+}
