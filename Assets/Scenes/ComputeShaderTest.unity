@@ -252,6 +252,8 @@ MonoBehaviour:
   Resolution: 256
   TargetHeight: 0.5
   K: 0.025
+  D: 0.05
+  Spread: 0.25
 --- !u!64 &467818108
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -314,7 +316,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 467818106}
-  m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+  m_Mesh: {fileID: 4300000, guid: c8ff05af996315d4b96304b7e48b890c, type: 2}
 --- !u!4 &467818111
 Transform:
   m_ObjectHideFlags: 0
@@ -324,7 +326,7 @@ Transform:
   m_GameObject: {fileID: 467818106}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.25, y: 0.25, z: 0.25}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 2
@@ -406,7 +408,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1136647696}
   m_LocalRotation: {x: 0.4299015, y: -0, z: -0, w: 0.90287584}
-  m_LocalPosition: {x: 0, y: 5.18, z: -6.06}
+  m_LocalPosition: {x: 0, y: 17.47, z: -16.32}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}

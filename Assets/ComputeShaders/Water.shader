@@ -4,6 +4,7 @@ Shader "Custom/Water"
     {
         _Color ("Color", Color) = (1,1,1,1)
         _MainTex ("Albedo (RGB)", 2D) = "white" {}
+        _HeightMap ("Height Map", 2D) = "white" {}
         _Glossiness ("Smoothness", Range(0,1)) = 0.5
         _Metallic ("Metallic", Range(0,1)) = 0.0
     }
@@ -14,10 +15,24 @@ Shader "Custom/Water"
 
         CGPROGRAM
         // Physically based Standard lighting model, and enable shadows on all light types
-        #pragma surface surf Standard fullforwardshadows
+        #pragma surface surf Standard fullforwardshadows vertex:vert
 
         // Use shader model 3.0 target, to get nicer looking lighting
         #pragma target 3.0
+
+        sampler2D _HeightMap;
+
+        void vert(inout appdata_full v)
+        {
+            float3 vertex = v.vertex.xyz;
+            float3 heightMap = tex2Dlod(_HeightMap, float4(v.texcoord.xy, 0, 0));
+
+            float maxHeight = 5;
+
+            vertex.y = ((heightMap.r - 0.5) * 2) * maxHeight;
+
+            v.vertex.xyz = vertex.xyz;
+        }
 
         sampler2D _MainTex;
 

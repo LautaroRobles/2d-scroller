@@ -8,35 +8,50 @@ RWTexture2D<float4> Output;
 
 float TargetHeight;
 float K;
+float D;
+float Spread;
+float MaxHeight;
 
 [numthreads(8,8,1)]
 void CSMain (uint3 id : SV_DispatchThreadID)
 {
     int kernelSize = 3;
-    float kernel[3][3] = {{1/4 ,1/2,1/4},
-                        { -0.1 , 0.99, 1/2},
-                        {1/4 ,1/2,1/4}};
+    float kernel[3][3] = {{1/4,1/2,1/4},
+                          {1/2, 1 ,1/2},
+                          {1/4,1/2,1/4}};
+    int radius = 1;
 
-    // TODO: insert actual code here!
-    float2 texCoord = id.xy;
-
-    float height = Input[texCoord].r;
-    float position = Input[texCoord].g;
-    float velocity = Input[texCoord].b;
-
-    float x = height - TargetHeight;
-    float acceleration = -K * x;
-
-    position += velocity;
-    velocity += acceleration;
-
-    /*
+    // Spring spread 
     for(int x = 0; x < kernelSize; x++) {
         for(int y = 0; y < kernelSize; y++) {
-            outputColor += Input[position].x;
+            float2 offset = float2(x - radius, y - radius);
+            float2 texCoord = id.xy;
+
+            float height = (Input[texCoord].r * 2 - 1) * MaxHeight;
+            float velocity = (Input[texCoord].g * 2 - 1) * MaxHeight;
+
+            float neighbourHeight = (Input[texCoord + offset].r * 2 - 1) * MaxHeight;
+            float neighbourVelocity = (Input[texCoord + offset].g * 2 - 1) * MaxHeight;
+
+            neighbourHeight += Spread * (height - neighbourHeight);
+            neighbourVelocity += Spread * (height - neighbourHeight);
+
+            Output[texCoord + offset] = float4((neighbourHeight * 0.5 + 0.5) * MaxHeight, (neighbourVelocity * 0.5 + 0.5) * MaxHeight, 0, 1);
         }
     }
-    */
 
-    Output[texCoord] = float4(height, position, velocity, 1);
+    // Spring simulation
+    float2 texCoord = id.xy;
+
+    float height = (Input[texCoord].r * 2 - 1) * MaxHeight;
+    float velocity = (Input[texCoord].g * 2 - 1) * MaxHeight;
+
+    float diff = height - TargetHeight;
+    float loss = -D * velocity;
+    float acceleration = -K * diff + loss;
+
+    height += velocity;
+    velocity += acceleration;
+
+    Output[texCoord] = float4((height * 0.5 + 0.5) * MaxHeight, (velocity * 0.5 + 0.5) * MaxHeight, 0, 1);
 }

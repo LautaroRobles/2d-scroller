@@ -12,7 +12,10 @@ public class Water : MonoBehaviour
 
     // Water spring config
     public float TargetHeight = 0.5f;
-    public float K = 0.1f;
+    public float K = 0.01f;
+    public float D = 0.01f;
+    public float Spread = 0.25f;
+    public float MaxHeight = 1f;
 
     // Start is called before the first frame update
     void Start()
@@ -26,7 +29,12 @@ public class Water : MonoBehaviour
     {
         // Compute shader's input
         InputTexture = new Texture2D(Resolution, Resolution);
-        InputTexture.SetPixels(new Color[Resolution * Resolution]);
+        var defaultValues = new Color[Resolution * Resolution];
+        for (var i = 0; i < Resolution * Resolution; i++)
+        {
+            defaultValues[i] = new Color(0.5f, 0.5f, 0, 1);
+        }
+        InputTexture.SetPixels(0, 0, Resolution, Resolution, defaultValues);
         InputTexture.Apply();
 
         // Compute shader's output
@@ -40,26 +48,22 @@ public class Water : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            int size = 2;
+            int size = 16;
             int x = Random.Range(0, Resolution);
             int y = Random.Range(0, Resolution);
-
-            x = 128;
-            y = 128;
 
             Color[] colors = new Color[size * size];
             for (int i = 0; i < colors.Length; i++)
             {
-                colors[i] = new Color(0.5f, 0f, 0f, 1);
+                colors[i] = new Color(1f, 0f, 0f, 1);
             }
 
             InputTexture.SetPixels(x, y, size, size, colors, 0);
             InputTexture.Apply();
         }
 
-        Debug.Log(InputTexture.GetPixel(128, 128));
-
         MeshRenderer.material.SetTexture("_MainTex", OutputTexture);
+        MeshRenderer.material.SetTexture("_HeightMap", OutputTexture);
 
         DispatchComputeShader();
         SetOutputAsInput();
@@ -71,6 +75,9 @@ public class Water : MonoBehaviour
 
         ComputeShader.SetFloat("TargetHeight", TargetHeight);
         ComputeShader.SetFloat("K", K);
+        ComputeShader.SetFloat("D", D);
+        ComputeShader.SetFloat("Spread", Spread);
+        ComputeShader.SetFloat("MaxHeight", MaxHeight);
 
         ComputeShader.SetTexture(kernelIndex, "Input", InputTexture);
         ComputeShader.SetTexture(kernelIndex, "Output", OutputTexture);
