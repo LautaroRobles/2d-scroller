@@ -245,10 +245,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 467818106}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0e70f6c478cdc8f46aae109097afe68b, type: 3}
+  m_Script: {fileID: 11500000, guid: 87c3f7eabc88ccf439f65cc5f7a4a890, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  computeShader: {fileID: 7200000, guid: 158b7e0d31d4fa64cafea1936744dffa, type: 3}
+  ComputeShader: {fileID: 7200000, guid: 53e6339c7a682ca429b3d6c34ab03a56, type: 3}
+  Resolution: 256
+  TargetHeight: 0.5
+  K: 0.025
 --- !u!64 &467818108
 MeshCollider:
   m_ObjectHideFlags: 0

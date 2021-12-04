@@ -6,6 +6,8 @@
 Texture2D<float4> Input;
 RWTexture2D<float4> Output;
 
+float TargetHeight;
+float K;
 
 [numthreads(8,8,1)]
 void CSMain (uint3 id : SV_DispatchThreadID)
@@ -16,14 +18,25 @@ void CSMain (uint3 id : SV_DispatchThreadID)
                         {1/4 ,1/2,1/4}};
 
     // TODO: insert actual code here!
-    float2 position = id.xy;
-    float outputColor = 0;
+    float2 texCoord = id.xy;
 
+    float height = Input[texCoord].r;
+    float position = Input[texCoord].g;
+    float velocity = Input[texCoord].b;
+
+    float x = height - TargetHeight;
+    float acceleration = -K * x;
+
+    position += velocity;
+    velocity += acceleration;
+
+    /*
     for(int x = 0; x < kernelSize; x++) {
         for(int y = 0; y < kernelSize; y++) {
-            outputColor += Input[position + float2(x - 1, y - 1)].x * kernel[x][y];
+            outputColor += Input[position].x;
         }
     }
+    */
 
-    Output[position] = float4(outputColor, outputColor, outputColor, 1);
+    Output[texCoord] = float4(height, position, velocity, 1);
 }
