@@ -27,9 +27,9 @@ Shader "Custom/Water"
             float3 vertex = v.vertex.xyz;
             float3 heightMap = tex2Dlod(_HeightMap, float4(v.texcoord.xy, 0, 0));
 
-            float maxHeight = 5;
+            float maxHeight = 20;
 
-            vertex.y = ((heightMap.r - 0.5) * 2) * maxHeight;
+            vertex.y = ((heightMap.r)) * maxHeight;
 
             v.vertex.xyz = vertex.xyz;
         }

@@ -1,9 +1,15 @@
 // Each #kernel tells which function to compile; you can have many kernels
 #pragma kernel CSMain
 
-// Create a RenderTexture with enableRandomWrite flag and set it
-// with cs.SetTexture
-Texture2D<float4> Input;
+struct WaterPoint
+{
+    float height;
+    float velocity;
+};
+
+RWStructuredBuffer<WaterPoint> PointsInput;
+RWStructuredBuffer<WaterPoint> PointsOutput;
+
 RWTexture2D<float4> Output;
 
 int Resolution;
@@ -11,12 +17,32 @@ int Resolution;
 float TargetHeight;
 float K;
 float D;
-float Spread;
-float MaxHeight;
+float Spread; 
 
 [numthreads(1,1,1)]
 void CSMain (uint3 id : SV_DispatchThreadID)
 {
+    // Spring simulation
+    float index = id.x + id.y * Resolution;
+
+    float height = PointsInput[index].height;
+    float velocity = PointsInput[index].velocity;
+
+    float diff = height - TargetHeight;
+    float loss = -D * velocity;
+    float acceleration = -K * diff + loss;
+
+    height += velocity;
+    velocity += acceleration;
+
+    PointsOutput[index].height = height;
+    PointsOutput[index].velocity = velocity;
+
+    height = height / 20 + 0.5;
+
+    Output[id.xy] = float4(height, height, height, 1);
+
+    /*
     int kernelSize = 3;
     float kernel[3][3] = {{0,2,0},
                           {2,1,2},
@@ -61,4 +87,5 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     velocity += acceleration;
 
     Output[texCoord] = float4((height * 0.5 + 0.5) * MaxHeight, (velocity * 0.5 + 0.5) * MaxHeight, 0, 1);
+    */
 }
