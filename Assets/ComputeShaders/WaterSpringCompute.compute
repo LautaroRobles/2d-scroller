@@ -6,19 +6,21 @@
 Texture2D<float4> Input;
 RWTexture2D<float4> Output;
 
+int Resolution;
+
 float TargetHeight;
 float K;
 float D;
 float Spread;
 float MaxHeight;
 
-[numthreads(8,8,1)]
+[numthreads(1,1,1)]
 void CSMain (uint3 id : SV_DispatchThreadID)
 {
     int kernelSize = 3;
-    float kernel[3][3] = {{1/4,1/2,1/4},
-                          {1/2, 1 ,1/2},
-                          {1/4,1/2,1/4}};
+    float kernel[3][3] = {{0,2,0},
+                          {2,1,2},
+                          {0,2,0}};
     int radius = 1;
 
     // Spring spread 
@@ -27,14 +29,19 @@ void CSMain (uint3 id : SV_DispatchThreadID)
             float2 offset = float2(x - radius, y - radius);
             float2 texCoord = id.xy;
 
+            if((texCoord.x + offset.x) >= Resolution || (texCoord.x + offset.x) < 0)
+                continue;
+            if((texCoord.y + offset.y) >= Resolution || (texCoord.y + offset.y) < 0)
+                continue;
+
             float height = (Input[texCoord].r * 2 - 1) * MaxHeight;
             float velocity = (Input[texCoord].g * 2 - 1) * MaxHeight;
 
             float neighbourHeight = (Input[texCoord + offset].r * 2 - 1) * MaxHeight;
             float neighbourVelocity = (Input[texCoord + offset].g * 2 - 1) * MaxHeight;
 
-            neighbourHeight += Spread * (height - neighbourHeight);
-            neighbourVelocity += Spread * (height - neighbourHeight);
+            neighbourHeight += Spread * (height - neighbourHeight) * kernel[x][y];
+            neighbourVelocity += Spread * (height - neighbourHeight) * kernel[x][y];
 
             Output[texCoord + offset] = float4((neighbourHeight * 0.5 + 0.5) * MaxHeight, (neighbourVelocity * 0.5 + 0.5) * MaxHeight, 0, 1);
         }
@@ -43,8 +50,8 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     // Spring simulation
     float2 texCoord = id.xy;
 
-    float height = (Input[texCoord].r * 2 - 1) * MaxHeight;
-    float velocity = (Input[texCoord].g * 2 - 1) * MaxHeight;
+    float height = (Output[texCoord].r * 2 - 1) * MaxHeight;
+    float velocity = (Output[texCoord].g * 2 - 1) * MaxHeight;
 
     float diff = height - TargetHeight;
     float loss = -D * velocity;

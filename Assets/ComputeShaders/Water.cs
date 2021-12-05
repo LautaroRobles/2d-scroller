@@ -32,7 +32,7 @@ public class Water : MonoBehaviour
         var defaultValues = new Color[Resolution * Resolution];
         for (var i = 0; i < Resolution * Resolution; i++)
         {
-            defaultValues[i] = new Color(0.5f, 0.5f, 0, 1);
+            defaultValues[i] = new Color(0f, 0f, 0, 1);
         }
         InputTexture.SetPixels(0, 0, Resolution, Resolution, defaultValues);
         InputTexture.Apply();
@@ -49,8 +49,8 @@ public class Water : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             int size = 16;
-            int x = Random.Range(0, Resolution);
-            int y = Random.Range(0, Resolution);
+            int x = Random.Range(0, Resolution - size);
+            int y = Random.Range(0, Resolution - size);
 
             Color[] colors = new Color[size * size];
             for (int i = 0; i < colors.Length; i++)
@@ -71,8 +71,9 @@ public class Water : MonoBehaviour
     private void DispatchComputeShader()
     {
         int kernelIndex = 0;
-        int threads = 8;
+        int threads = 1;
 
+        ComputeShader.SetInt("Resolution", Resolution);
         ComputeShader.SetFloat("TargetHeight", TargetHeight);
         ComputeShader.SetFloat("K", K);
         ComputeShader.SetFloat("D", D);
