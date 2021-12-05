@@ -64,7 +64,11 @@ public class Water : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            PointsInput[Random.Range(0, Resolution * Resolution)] = new WaterPoint(2, 2);
+            int position = Random.Range(0, Resolution * Resolution);
+
+            //position = 64 + (Resolution * Resolution / 2);
+
+            PointsInput[position] = new WaterPoint(-1000, -10);
         }
 
         MeshRenderer.material.SetTexture("_MainTex", OutputTexture);
@@ -76,7 +80,7 @@ public class Water : MonoBehaviour
     private void DispatchComputeShader()
     {
         int kernelIndex = 0;
-        int threads = 1;
+        int threads = 8;
 
         InputBuffer.SetData(PointsInput);
         OutputBuffer.SetData(PointsOutput);

@@ -249,11 +249,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ComputeShader: {fileID: 7200000, guid: 53e6339c7a682ca429b3d6c34ab03a56, type: 3}
-  Resolution: 128
+  Resolution: 256
   TargetHeight: 0
-  K: 0.025
-  D: 0.05
-  Spread: 0.5
+  K: 0.004
+  D: 0.007
+  Spread: 0.25
   MaxHeight: 1
 --- !u!64 &467818108
 MeshCollider:

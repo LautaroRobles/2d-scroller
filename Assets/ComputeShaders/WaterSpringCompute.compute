@@ -19,9 +19,40 @@ float K;
 float D;
 float Spread; 
 
-[numthreads(1,1,1)]
+[numthreads(8,8,1)]
 void CSMain (uint3 id : SV_DispatchThreadID)
 {
+    int kernelSize = 3;
+    float kernel[3][3] = {{0,1,0},
+                          {1,0,1},
+                          {0,1,0}};
+    int radius = 1;
+
+    // Modify current WaterPoint based on sorrounding points 
+    for(int x = 0; x < kernelSize; x++) {
+        for(int y = 0; y < kernelSize; y++) {
+            float2 off = float2(x - radius, y - radius);
+            float index = id.x + id.y * Resolution;
+            float offIndex = id.x + (off.x) + (id.y + off.y) * Resolution;
+
+            if((id.x + off.x) >= (Resolution - 1) || (id.y + off.y) >= (Resolution - 1))
+                continue;
+            if((id.x + off.x) <= 0 || (id.y + off.y) <= 0)
+                continue;
+        
+
+            float height = PointsInput[index].height;
+            float neighbourHeight = PointsInput[offIndex].height;
+
+            //float velocity = PointsInput[index].velocity;
+            //float neighbourVelocity = PointsInput[offIndex].velocity;
+
+            PointsInput[index].height += Spread * (neighbourHeight - height) * kernel[x][y];
+            PointsInput[index].velocity += Spread * (neighbourHeight - height) * kernel[x][y];
+        }
+    }
+    
+
     // Spring simulation
     float index = id.x + id.y * Resolution;
 
