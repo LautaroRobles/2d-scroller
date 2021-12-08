@@ -68,7 +68,7 @@ public class Water : MonoBehaviour
 
             //position = 64 + (Resolution * Resolution / 2);
 
-            PointsInput[position] = new WaterPoint(-1000, -10);
+            PointsInput[position] = new WaterPoint(0, -100);
         }
 
         MeshRenderer.material.SetTexture("_MainTex", OutputTexture);

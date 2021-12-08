@@ -29,7 +29,7 @@ Shader "Custom/Water"
 
             float maxHeight = 20;
 
-            vertex.y = ((heightMap.r)) * maxHeight;
+            vertex.y = (heightMap.r - 0.5) * maxHeight;
 
             v.vertex.xyz = vertex.xyz;
         }
