@@ -3,17 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
-[RequireComponent(typeof(Pixelart))]
+[RequireComponent(typeof(Sprite))]
 public class Projectile : MonoBehaviour
 {
-    public Texture2D SpriteSheet;
-    private Pixelart Pixelart;
+    private Sprite Sprite;
     void Start()
     {
-        Pixelart = GetComponent<Pixelart>();
-        Pixelart.InstantiateSprite(SpriteSheet, 17, 17, new Vector2(0.5f, 0.5f));
-        Pixelart.GenerateAnimation("idle", 0, 0, 1f, true);
-        Pixelart.Play("idle");
+        Sprite = GetComponent<Sprite>();
+        Sprite.GenerateAnimation("idle", 0, 0, 1f, true);
+        Sprite.Play("idle");
     }
 
     void Update()

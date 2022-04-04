@@ -2,15 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Pixelart : MonoBehaviour
+[RequireComponent(typeof(MeshRenderer))]
+[ExecuteAlways]
+public class Sprite : MonoBehaviour
 {
-    private const float PixelScale = 12;
-    public GameObject PixelPrefab;
-    [HideInInspector]
-    public GameObject[] Pixels;
-    private Texture2D Spritesheet;
-    private int SpriteWidth;
-    private int SpriteHeight;
+    public Texture2D SpriteSheet;
+    public int SpriteWidth;
+    public int SpriteHeight;
+    public int EditorFrame;
     private Dictionary<string, Animation> Animations;
     private struct Animation
     {
@@ -30,31 +29,14 @@ public class Pixelart : MonoBehaviour
     private int AnimationPlayCount;
     private int PreviousFrame = -1;
     private float FrameTimeStart;
-
-
-    public void InstantiateSprite(Texture2D spritesheet, int spriteWidth, int spriteHeight, Vector2 center)
+    // Start is called before the first frame update
+    void Start()
     {
-        if (PixelPrefab == null)
-            return;
-
-        Spritesheet = spritesheet;
-        SpriteWidth = spriteWidth;
-        SpriteHeight = spriteHeight;
-
-        Pixels = new GameObject[spriteWidth * spriteHeight];
-
-        var i = 0;
-        for (var x = 0; x < spriteWidth; x++)
+        if (!Application.IsPlaying(gameObject))
         {
-            for (var y = 0; y < spriteHeight; y++)
-            {
-                Pixels[i] = Instantiate(PixelPrefab);
-                Pixels[i].transform.parent = transform;
-                Pixels[i].transform.localPosition = new Vector3((x - center.x * spriteWidth + 0.5f) / PixelScale, (y - center.y * spriteHeight + 0.5f) / PixelScale, 0);
-                Pixels[i].transform.localScale = new Vector3(1 / PixelScale, 1 / PixelScale, 1 / PixelScale);
-                Pixels[i].SetActive(false);
-                i++;
-            }
+            var renderer = GetComponent<MeshRenderer>();
+            var tempMaterial = new Material(renderer.sharedMaterial);
+            renderer.sharedMaterial = tempMaterial;
         }
     }
 
@@ -92,34 +74,27 @@ public class Pixelart : MonoBehaviour
 
     private void RenderFrame(int frame)
     {
-        var i = 0;
-        for (var x = 0; x < SpriteWidth; x++)
+        Material material = null;
+
+        if (Application.IsPlaying(gameObject))
+            material = GetComponent<MeshRenderer>().material;
+        else
         {
-            for (var y = 0; y < SpriteHeight; y++)
-            {
-                if (i >= Pixels.Length)
-                    return;
-
-                Color color = Spritesheet.GetPixel(
-                    x + (frame * SpriteWidth) % Spritesheet.width,
-                    y + Mathf.FloorToInt(frame * SpriteWidth / Spritesheet.width) * SpriteHeight
-                );
-
-                if (color.a == 0)
-                    Pixels[i].SetActive(false);
-                else
-                    Pixels[i].SetActive(true);
-
-                Material material = Pixels[i].GetComponent<MeshRenderer>().material;
-                material.SetColor("_Color", color);
-
-                i++;
-            }
+            material = GetComponent<MeshRenderer>().sharedMaterial;
         }
+
+        material.SetTexture("_SpriteSheet", SpriteSheet);
+        material.SetFloat("_SpriteHeight", SpriteHeight);
+        material.SetFloat("_SpriteWidth", SpriteWidth);
+        material.SetInt("_SpriteFrame", frame);
     }
 
     void Update()
     {
+        // If in editor
+        if (!Application.IsPlaying(gameObject))
+            RenderFrame(EditorFrame);
+
         if (Animations == null)
             return;
 
