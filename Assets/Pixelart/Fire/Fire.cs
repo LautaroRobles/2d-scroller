@@ -17,9 +17,14 @@ public class Fire : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetMouseButton(0))
+        if (Input.GetKeyDown(KeyCode.Space))
         {
-            Pixelart.Play("fire");
+            Pixelart.Stop();
+
+            foreach (GameObject pixel in Pixelart.Pixels)
+            {
+                pixel.GetComponent<Rigidbody>().isKinematic = false;
+            }
         }
     }
 }

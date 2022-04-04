@@ -4,9 +4,10 @@ using UnityEngine;
 
 public class Pixelart : MonoBehaviour
 {
-    private const float PixelScale = 16;
+    private const float PixelScale = 12;
     public GameObject PixelPrefab;
-    private GameObject[] Pixels;
+    [HideInInspector]
+    public GameObject[] Pixels;
     private Texture2D Spritesheet;
     private int SpriteWidth;
     private int SpriteHeight;
@@ -133,7 +134,7 @@ public class Pixelart : MonoBehaviour
 
         Animation animationToPlay = Animations[AnimationToPlay];
 
-        int frameToPlay = Mathf.FloorToInt((Time.time - FrameTimeStart) / animationToPlay.FrameRate + animationToPlay.Start) % (animationToPlay.End + 1);
+        int frameToPlay = Mathf.FloorToInt((Time.time - FrameTimeStart) / animationToPlay.FrameRate) % (animationToPlay.End - animationToPlay.Start + 1) + animationToPlay.Start;
 
         if (PreviousFrame != frameToPlay)
         {

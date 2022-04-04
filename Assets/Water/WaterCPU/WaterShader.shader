@@ -4,9 +4,13 @@ Shader "Custom/WaterShader"
     {
         _Color ("Color", Color) = (1,1,1,1)
         _MainTex ("Albedo (RGB)", 2D) = "white" {}
-        _BumpMap("Bumpmap", 2D) = "bump" {}
+        _BumpMap1("Bumpmap1", 2D) = "bump" {}
+        _BumpMap2("Bumpmap2", 2D) = "bump" {}
+		_BumpMapStrenght ("Bumpmap Strength", Range(0, 1)) = 0.1
         _Glossiness ("Smoothness", Range(0,1)) = 0.5
         _Metallic ("Metallic", Range(0,1)) = 0.0
+        _WaterFogColor ("Water Fog Color", Color) = (0, 0, 0, 0)
+		_WaterFogDensity ("Water Fog Density", Range(0, 2)) = 0.1
 
         _WaveA ("WaveA (dir, steepness, wavelength)", Vector) = (1, 0, 0.5, 10)
         _WaveB ("WaveB", Vector) = (1, 0.5, 0.5, 10)
@@ -16,10 +20,11 @@ Shader "Custom/WaterShader"
     {
         Tags { "RenderType"="Transparent" "Queue"="Transparent"}
         LOD 200
+        GrabPass { "_WaterBackground" }
 
         CGPROGRAM
         // Physically based Standard lighting model, and enable shadows on all light types
-        #pragma surface surf Standard alpha vertex:vert
+        #pragma surface surf Standard vertex:vert alpha
 
         // Use shader model 3.0 target, to get nicer looking lighting
         #pragma target 3.0
@@ -62,6 +67,9 @@ Shader "Custom/WaterShader"
             float3 tangent = float3(1, 0, 0);
             float3 binormal = float3(0, 0, 1);
             float3 p = gridPoint;
+
+            gridPoint = mul(unity_ObjectToWorld, vertexData.vertex).xyz;
+
             p += GerstnerWave(_WaveA, gridPoint, tangent, binormal);
             p += GerstnerWave(_WaveB, gridPoint, tangent, binormal);
             p += GerstnerWave(_WaveC, gridPoint, tangent, binormal);
@@ -69,21 +77,27 @@ Shader "Custom/WaterShader"
             vertexData.vertex.xyz = p;
             vertexData.normal = normal + vertexData.normal;
         }
-
-        sampler2D _MainTex;
-        sampler2D _BumpMap;
-
+        
         struct Input
         {
             float2 uv_MainTex;
-            float2 uv_BumpMap;
+            float2 uv_BumpMap1;
+            float2 uv_BumpMap2;
+            float3 worldNormal; INTERNAL_DATA
             float4 screenPos;
         };
 
+        sampler2D _MainTex;
+        sampler2D _BumpMap1, _BumpMap2;
+
         half _Glossiness;
         half _Metallic;
+        float4 _WaterFogColor;
+		float _WaterFogDensity;
+        float _BumpMapStrenght;
         fixed4 _Color;
-        sampler2D _CameraDepthTexture;
+        sampler2D _CameraDepthTexture, _WaterBackground;
+        float4 _CameraDepthTexture_TexelSize;
 
         // Add instancing support for this shader. You need to check 'Enable Instancing' on materials that use the shader.
         // See https://docs.unity3d.com/Manual/GPUInstancing.html for more information about instancing.
@@ -92,14 +106,31 @@ Shader "Custom/WaterShader"
             // put more per-instance properties here
         UNITY_INSTANCING_BUFFER_END(Props)
 
-        float3 ColorBelowWater (float4 screenPos) {
-            float2 uv = screenPos.xy / screenPos.w;
-            float backgroundDepth =
-                LinearEyeDepth(SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, uv));
+        float3 ColorBelowWater (float4 screenPos, half3 normal) {
+            float2 uvOffset = normal.xy;
+            uvOffset.y *= _CameraDepthTexture_TexelSize.z * abs(_CameraDepthTexture_TexelSize.y);
+
+            float2 uv = (screenPos.xy + uvOffset) / screenPos.w;
+            float backgroundDepth = LinearEyeDepth(SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, uv));
             float surfaceDepth = UNITY_Z_0_FAR_FROM_CLIPSPACE(screenPos.z);
             float depthDifference = backgroundDepth - surfaceDepth;
-            
-            return depthDifference / 10;
+
+            if (depthDifference < 0) {
+                uv = screenPos.xy / screenPos.w;
+                #if UNITY_UV_STARTS_AT_TOP
+                    if (_CameraDepthTexture_TexelSize.y < 0) {
+                        uv.y = 1 - uv.y;
+                    }
+                #endif
+                backgroundDepth =
+                    LinearEyeDepth(SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, uv));
+                depthDifference = backgroundDepth - surfaceDepth;
+            }
+
+            float3 backgroundColor = tex2D(_WaterBackground, uv).rgb;
+            float fogFactor = exp2(-_WaterFogDensity * depthDifference);
+
+	        return lerp(_WaterFogColor, backgroundColor, fogFactor);
         }
 
         void surf (Input IN, inout SurfaceOutputStandard o)
@@ -107,11 +138,17 @@ Shader "Custom/WaterShader"
             // Albedo comes from a texture tinted by color
             fixed4 c = tex2D (_MainTex, IN.uv_MainTex) * _Color;
 
-            half3 normal1 = UnpackNormal(tex2D(_BumpMap, IN.uv_BumpMap - _Time.y * 0.1));
-            half3 normal2 = UnpackNormal(tex2D(_BumpMap, IN.uv_BumpMap + _Time.y * 0.1));
+            float4 normal1 = tex2D(_BumpMap1, IN.uv_BumpMap1 + float2(_Time.x, -_Time.y) * 0.03);
+            float4 normal2 = tex2D(_BumpMap1, IN.uv_BumpMap1 + float2(_Time.x, _Time.y) * 0.05);
+            float4 normal3 = tex2D(_BumpMap2, IN.uv_BumpMap2 + float2(-_Time.x, _Time.y) * 0.07);
+            float4 normal4 = tex2D(_BumpMap2, IN.uv_BumpMap2 + float2(-_Time.x, -_Time.y) * 0.09);
+            float4 noNormal = float4(0.5, 0.5, 1, 1);
+            float4 normal = (normal1 + normal2 + normal3 + normal4) * 0.25;
 
-            o.Albedo = (1 - saturate(ColorBelowWater(IN.screenPos)) + 0.5) * _Color;
-            o.Normal = normal1 * 0.5 + normal2 * 0.5;
+            half3 finalNormal = UnpackNormal(lerp(noNormal, normal, _BumpMapStrenght));
+
+            o.Normal = finalNormal;
+            o.Albedo = ColorBelowWater(IN.screenPos, o.Normal);
             // Metallic and smoothness come from slider variables
             o.Metallic = _Metallic;
             o.Smoothness = _Glossiness;

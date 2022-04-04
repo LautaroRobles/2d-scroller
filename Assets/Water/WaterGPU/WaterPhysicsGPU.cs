@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class WaterPhysics : MonoBehaviour
+public class WaterPhysicsGPU : MonoBehaviour
 {
     public ComputeShader ComputeShader;
     private RenderTexture OutputTexture;
@@ -68,7 +68,7 @@ public class WaterPhysics : MonoBehaviour
 
             //position = 64 + (Resolution * Resolution / 2);
 
-            PointsInput[position] = new WaterPoint(0, -200);
+            PointsInput[position] = new WaterPoint(0, -50);
         }
 
         MeshRenderer.material.SetTexture("_MainTex", OutputTexture);
