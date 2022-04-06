@@ -4,5 +4,11 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/_BattleGame/Scenes/PreLoad.unity
+    guid: 2be176ffa6ad0ce4ca235aa65c1a5c60
+  - enabled: 1
+    path: Assets/_BattleGame/Scenes/Test/Gameplay.unity
+    guid: 7208b25608da1254a816a25a8c944a8c
   m_configObjects: {}
