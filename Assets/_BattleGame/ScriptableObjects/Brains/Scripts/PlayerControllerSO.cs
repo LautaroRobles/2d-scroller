@@ -11,15 +11,18 @@ public class PlayerControllerSO : CharacterBrainSO
     public float Speed;
     public float JumpSpeed;
     public float MaxMoveAmmount;
-    public override void Initialize(Character character, CharacterMovement movement, CharacterWeapons weapon)
+    public override void Initialize(Character character)
     {
         _playerInput = new PlayerInputActions();
         _playerInput.Player.Enable();
     }
-    public override void Think(Character character, CharacterMovement movement, CharacterWeapons weapon)
+    public override void Think(Character character)
     {
-        if (!character.EnableBrain)
+        if (!character.CharacterStateManager.EnableBrain)
             return;
+
+        var movement = character.CharacterMovement;
+        var weapon = character.CharacterWeapons;
 
         movement.Gravity = Gravity;
         movement.JumpSpeed = JumpSpeed;

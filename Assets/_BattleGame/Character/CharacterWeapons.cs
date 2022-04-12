@@ -4,14 +4,20 @@ using UnityEngine;
 
 public class CharacterWeapons : MonoBehaviour
 {
-    public InventorySO WeaponInventory;
+    private Character _character;
+    private InventorySO _weapons;
     public Transform FirePosition;
     public int SelectedWeapon;
+    void Start()
+    {
+        _character = GetComponentInParent<Character>();
+        _weapons = _character.CharacterInventory.Weapons;
+    }
     public void NextWeapon()
     {
         SelectedWeapon++;
 
-        if (SelectedWeapon >= WeaponInventory.Count())
+        if (SelectedWeapon >= _weapons.Count())
         {
             SelectedWeapon = 0;
         }
@@ -22,12 +28,12 @@ public class CharacterWeapons : MonoBehaviour
 
         if (SelectedWeapon < 0)
         {
-            SelectedWeapon = WeaponInventory.Count() - 1;
+            SelectedWeapon = _weapons.Count() - 1;
         }
     }
     public void Fire(Vector3 direction, float force)
     {
-        ItemWeaponSO weapon = (ItemWeaponSO)WeaponInventory.GetItem(SelectedWeapon);
+        ItemWeaponSO weapon = (ItemWeaponSO)_weapons.GetItem(SelectedWeapon);
 
         var projectile = weapon.ProjectilePool.SpawnObject(FirePosition.position, Quaternion.identity);
 

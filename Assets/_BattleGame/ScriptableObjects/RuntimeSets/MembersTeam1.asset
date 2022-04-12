@@ -9,10 +9,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 486a13eded421e14c86e9fb421083328, type: 3}
-  m_Name: Grenade
+  m_Script: {fileID: 11500000, guid: 2a4f4cf78803f7743a42fdf38a8c8016, type: 3}
+  m_Name: MembersTeam1
   m_EditorClassIdentifier: 
-  Name: 
-  Description: 
-  ProjectilePool: {fileID: 11400000, guid: 66b4c0ec69e834347a72b530ea921220, type: 2}
-  AmmoPerTurn: 1

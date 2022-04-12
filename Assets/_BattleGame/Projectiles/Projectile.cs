@@ -7,13 +7,13 @@ using System;
 [RequireComponent(typeof(Rigidbody))]
 public class Projectile : MonoBehaviour
 {
-    private Rigidbody Rigidbody;
+    private Rigidbody _rigidbody;
     public float Timeout;
     public float TimeoutAfterStopping;
     public float DespawnSpeedEpsilon = 0.3f;
     public bool DisableAfterTimeout;
-    private float TimeOnEnable;
-    private float TimeOnStopping;
+    private float _timeOnEnable;
+    private float _timeOnStopping;
 
     //Events
     public event Action OnSpawn;
@@ -21,11 +21,11 @@ public class Projectile : MonoBehaviour
     public event Action OnTimeoutAfterStopping;
     public void OnEnable()
     {
-        Rigidbody = GetComponent<Rigidbody>();
-        TimeOnEnable = Time.time;
-        TimeOnStopping = Time.time;
+        _rigidbody = GetComponent<Rigidbody>();
+        _timeOnEnable = Time.time;
+        _timeOnStopping = Time.time;
 
-        Rigidbody.velocity = Vector3.zero;
+        _rigidbody.velocity = Vector3.zero;
 
         OnSpawn?.Invoke();
     }
@@ -40,7 +40,7 @@ public class Projectile : MonoBehaviour
     {
         // Disable
         var currentTime = Time.time;
-        if (Mathf.Abs(currentTime - TimeOnEnable) > Timeout)
+        if (Mathf.Abs(currentTime - _timeOnEnable) > Timeout)
         {
             OnTimeout?.Invoke();
             if (DisableAfterTimeout)
@@ -49,13 +49,13 @@ public class Projectile : MonoBehaviour
     }
     void TriggerTimeOutAfterStopping()
     {
-        var speed = Rigidbody.velocity.magnitude;
+        var speed = _rigidbody.velocity.magnitude;
 
         if (speed > DespawnSpeedEpsilon)
-            TimeOnStopping = Time.time;
+            _timeOnStopping = Time.time;
 
         var currentTime = Time.time;
-        if (Mathf.Abs(currentTime - TimeOnStopping) > TimeoutAfterStopping)
+        if (Mathf.Abs(currentTime - _timeOnStopping) > TimeoutAfterStopping)
         {
             OnTimeoutAfterStopping?.Invoke();
             if (DisableAfterTimeout)

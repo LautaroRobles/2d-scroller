@@ -12,7 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 486a13eded421e14c86e9fb421083328, type: 3}
   m_Name: Cannon
   m_EditorClassIdentifier: 
-  Name: 
-  Description: 
-  ProjectilePool: {fileID: 11400000, guid: 622af44ff40320f48998e6c55aa459b0, type: 2}
+  ItemType: {fileID: 11400000, guid: b017d7aea99f7224e8063f06a0cf8a3e, type: 2}
+  Name: Cannon
+  Description: El arma mas simple
   AmmoPerTurn: 1
+  AmmoPerGame: 1
+  BaseDamage: 80
+  ActivateTime: 0
+  ProjectilePool: {fileID: 11400000, guid: 622af44ff40320f48998e6c55aa459b0, type: 2}

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class RuntimeSetSO<T> : ScriptableObject
 {
-    private List<T> _items = new List<T>();
+    [SerializeField] private List<T> _items = new List<T>();
     public void Initialize()
     {
         _items.Clear();

@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 85c9d35b3024d974dbd0ce86f3ae0b8f, type: 3}
-  m_Name: TeamPlayer
+  m_Name: Team1Player
   m_EditorClassIdentifier: 
   OnTurnStarted: {fileID: 11400000, guid: 72ed010a3c891e442b102e1cba0cc313, type: 2}
   OnCharacterSelected: {fileID: 11400000, guid: 5834715ef41d3c343b40b40341d4c992, type: 2}

@@ -4,6 +4,6 @@ using UnityEngine;
 
 public abstract class CharacterBrainSO : ScriptableObject
 {
-    public virtual void Initialize(Character character, CharacterMovement movement, CharacterWeapons weapon) { }
-    public abstract void Think(Character character, CharacterMovement movement, CharacterWeapons weapon);
+    public virtual void Initialize(Character character) { }
+    public abstract void Think(Character character);
 }

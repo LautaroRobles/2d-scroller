@@ -7,8 +7,11 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2a4f4cf78803f7743a42fdf38a8c8016, type: 3}
-  m_Name: TeamPlayerSet
+  m_Script: {fileID: 11500000, guid: 5e3a2e464d7d27d469971c01615b9cb7, type: 3}
+  m_Name: PlayerWeaponsInventory
   m_EditorClassIdentifier: 
+  _items:
+  - {fileID: 11400000, guid: 5976977ea7047a84f8fb41708f574986, type: 2}
+  Slots: 0
