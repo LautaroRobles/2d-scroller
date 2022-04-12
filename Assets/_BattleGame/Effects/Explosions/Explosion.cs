@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Explosion : MonoBehaviour, IPooledObject
+public class Explosion : MonoBehaviour
 {
     private Sprite Sprite;
     public int Frames;
@@ -14,15 +14,12 @@ public class Explosion : MonoBehaviour, IPooledObject
     }
     void OnEnable()
     {
+        Sprite.Play("explode");
         Sprite.OnLoop += Disable;
     }
     void OnDisable()
     {
         Sprite.OnLoop -= Disable;
-    }
-    public void OnObjectSpawn()
-    {
-        Sprite.Play("explode");
     }
     void Disable(string animation)
     {

@@ -5,7 +5,7 @@ using System;
 
 [RequireComponent(typeof(SphereCollider))]
 [RequireComponent(typeof(Rigidbody))]
-public class Projectile : MonoBehaviour, IPooledObject
+public class Projectile : MonoBehaviour
 {
     private Rigidbody Rigidbody;
     public float Timeout;
@@ -17,15 +17,15 @@ public class Projectile : MonoBehaviour, IPooledObject
 
     //Events
     public event Action OnSpawn;
-    public event Action OnHit;
-    public event Action OnStop;
     public event Action OnTimeout;
     public event Action OnTimeoutAfterStopping;
-    public void OnObjectSpawn()
+    public void OnEnable()
     {
         Rigidbody = GetComponent<Rigidbody>();
         TimeOnEnable = Time.time;
         TimeOnStopping = Time.time;
+
+        Rigidbody.velocity = Vector3.zero;
 
         OnSpawn?.Invoke();
     }

@@ -140,7 +140,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6ee816c796b10d4da088192a1fa908b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  SpriteMaterial: {fileID: 0}
   SpriteSheet: {fileID: 2800000, guid: ef60ad435900832439713f2f9affe1d0, type: 3}
   SpriteWidth: 32
   SpriteHeight: 32
+  SpriteFilp: 1
   EditorFrame: 3

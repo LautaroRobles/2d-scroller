@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Frames: 7
-  FrameRate: 0.05
+  FrameRate: 0.07
 --- !u!1 &1172828699359687035
 GameObject:
   m_ObjectHideFlags: 0
@@ -140,7 +140,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6ee816c796b10d4da088192a1fa908b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  SpriteMaterial: {fileID: 0}
   SpriteSheet: {fileID: 2800000, guid: 091af937a0d831740b5a3ebaa486a4d2, type: 3}
   SpriteWidth: 64
   SpriteHeight: 64
+  SpriteFilp: 0
   EditorFrame: 3
